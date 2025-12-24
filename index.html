@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>刘大小姐的库</title>
+    <style>
+        /* 基础样式 */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "PingFang SC", "Microsoft YaHei", sans-serif; }
+        body { background-color: #ffffff; color: #000000; scroll-behavior: smooth; overflow-x: hidden; }
+
+        /* --- 首页部分 (Hero Section) --- */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0 10%;
+        }
+
+        .hero h1 {
+            /* 调整后的标题大小 */
+            font-size: clamp(2.5rem, 8vw, 5rem); 
+            line-height: 1.2;
+            font-weight: 700;
+            margin-bottom: 40px;
+            letter-spacing: 2px;
+        }
+
+        .cta-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: fit-content;
+            padding: 15px 60px;
+            border: 2px solid #000;
+            border-radius: 100px;
+            text-decoration: none;
+            color: #000;
+            font-weight: bold;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .cta-btn:hover {
+            background-color: #000;
+            color: #fff;
+            transform: translateY(-3px);
+        }
+
+        /* --- 图片展示区 --- */
+        .gallery-container {
+            padding: 60px 10% 100px;
+            border-top: 1px solid #000; /* 用一条黑线分隔 */
+        }
+
+        /* 瀑布流布局：保持原比例 */
+        .masonry-wrapper {
+            column-count: 4; /* 电脑端4列 */
+            column-gap: 20px;
+        }
+
+        .photo-item {
+            display: inline-block;
+            width: 100%;
+            margin-bottom: 20px;
+            border: 1px solid #000; /* 要求的黑框 */
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            background-color: #f9f9f9;
+        }
+
+        .photo-item img {
+            width: 100%;
+            height: auto; /* 关键：原比例显示 */
+            display: block;
+        }
+
+        .photo-item:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        /* --- 灯箱 --- */
+        #lightbox {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.98);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+            cursor: zoom-out;
+        }
+
+        #lightbox img {
+            max-width: 95%;
+            max-height: 90vh;
+            border: 1px solid #000;
+        }
+
+        /* 响应式 */
+        @media (max-width: 1024px) { .masonry-wrapper { column-count: 3; } }
+        @media (max-width: 768px) { 
+            .masonry-wrapper { column-count: 2; } 
+            .hero h1 { font-size: 3rem; }
+            .hero { padding: 0 5%; }
+            .gallery-container { padding: 40px 5%; }
+        }
+    </style>
+</head>
+<body>
+
+    <section class="hero">
+        <h1>刘大小姐的库</h1>
+        <a href="#gallery" class="cta-btn">开始</a>
+    </section>
+
+    <section id="gallery" class="gallery-container">
+        <div class="masonry-wrapper" id="photo-grid">
+            </div>
+    </section>
+
+    <div id="lightbox" onclick="closeLightbox()">
+        <img id="lightbox-img" src="">
+    </div>
+
+    <script>
+        const grid = document.getElementById('photo-grid');
+        const lb = document.getElementById('lightbox');
+        const lbImg = document.getElementById('lightbox-img');
+
+        // 图片循环逻辑 (1-61)
+        const total = 61;
+
+        for (let i = 1; i <= total; i++) {
+            const div = document.createElement('div');
+            div.className = 'photo-item';
+            
+            const img = document.createElement('img');
+            
+            // 路径匹配你的文件名：images/1 (1).jpg
+            // 如果后缀是大写的 .JPG，请将下面末尾改为 .JPG
+            const fileName = `1 (${i}).jpg`;
+            img.src = `images/${fileName}`;
+            img.loading = "lazy";
+
+            // 纠错：如果图片加载失败，会在浏览器控制台提示你
+            img.onerror = function() {
+                console.warn("图片不存在: " + this.src);
+                this.parentElement.style.display = 'none';
+            };
+
+            div.onclick = (e) => {
+                e.stopPropagation();
+                lbImg.src = img.src;
+                lb.style.display = 'flex';
+                document.body.style.overflow = 'hidden'; // 禁止页面滚动
+            };
+
+            div.appendChild(img);
+            grid.appendChild(div);
+        }
+
+        function closeLightbox() {
+            lb.style.display = 'none';
+            document.body.style.overflow = 'auto'; // 恢复滚动
+        }
+    </script>
+</body>
+</html>
